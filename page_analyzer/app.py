@@ -67,6 +67,8 @@ def validate(url):
         errors["name"] = "URL не должен быть пустым"
     elif len(url["name"]) >= 255:
         errors["name"] = "URL должен быть короче 255 символов"
+    elif db.find_matches(conn, url["name"]):
+        errors["name"] = "Такой url уже существует"
     return errors
 
 
