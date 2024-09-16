@@ -6,7 +6,10 @@ dev:
 
 PORT ?= 8080
 start:
-	poetry run gunicorn -w 5 -b 0.0.0.0:$(PORT) page_analyzer:app
+	poetry run gunicorn -w 5 -b 0.0.0.0:8080 page_analyzer:app
 
 reinstall:
 	python3 -m pip install --user dist/*.whl --force-reinstall
+
+build:
+	./build.sh

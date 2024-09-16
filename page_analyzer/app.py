@@ -13,7 +13,7 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 conn = psycopg2.connect(DATABASE_URL)
 
-
+"""
 def init_db(conn):
     with conn.cursor() as curs:
         with open("../database.sql", "r") as f:
@@ -21,17 +21,7 @@ def init_db(conn):
 
         curs.execute(sql)
         conn.commit()
-
-
-def check_tables(conn):
-    with conn.cursor() as curs:
-        curs.execute(
-            "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
-        )
-        tables = curs.fetchall()
-        print("Tables in the database:")
-        for table in tables:
-            print(table[0])
+"""
 
 
 @app.route("/")
@@ -48,20 +38,37 @@ def post_url():
 
     if errors:
         return render_template("/index.html", url=url, errors=errors)
-    db.save(conn, url)
+    id = db.save(conn, url)
 
     flash("URL был успешно добавлен", "success")
-    return redirect(url_for("new_url"))
+    return redirect(url_for("show_url", id=id))
+
+
+@app.route("/urls")
+def show_urls():
+    urls = db.get_all_urls(conn)
+    return render_template("/urls/index.html", urls=urls)
+
+
+@app.route("/urls/<int:id>")
+def show_url(id):
+    url = db.find(conn, id)
+
+    if not url:
+        flash("URL не найден", "error")
+        return redirect(url_for("new_url"))
+
+    return render_template("/urls/show.html", url=url)
 
 
 def validate(url):
     errors = {}
-    if not len(url["name"]) < 255:
-        errors["name"] = "URL must be shorter than 255 characters"
+    if "name" not in url or not url["name"]:
+        errors["name"] = "URL не должен быть пустым"
+    elif len(url["name"]) >= 255:
+        errors["name"] = "URL должен быть короче 255 символов"
     return errors
 
 
 if __name__ == "__main__":
-    init_db(conn)  # Инициализация базы данных
-    check_tables(conn)
     app.run(debug=True)

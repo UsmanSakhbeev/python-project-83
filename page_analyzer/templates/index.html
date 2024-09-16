@@ -11,13 +11,16 @@
     <form action="{{ url_for('post_url') }}" method="post">
         <div>
             <label>URL
-                <input type="url" name="url" value="{{ url.name }}">
+                <input type="url" name="name" value="{{ url.name }}">
             </label>
             {% if errors.name %}
                 <div>{{ errors.name }}</div>
             {% endif %}
         </div>
         <input type="submit" value="Create">
+    </form>
+    <form action="{{url_for("show_urls")}}" method="get">
+        <input type="submit" value="Show urls">
     </form>
 </body>
 </html>

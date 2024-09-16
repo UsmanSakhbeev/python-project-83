@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Список всех сайтов</title>
+  </head>
+  <body>
+    <table>
+      {%for url in urls%}
+      <tr>
+        <td>
+          {{url.id}}
+        </td>
+        <td>
+          {{url.name}}
+        </td>
+      </tr>
+      {%endfor%}
+    </table>
+    <a href="{{ url_for('new_url') }}">Вернуться на главную</a>
+  </body>
+</html>
+
