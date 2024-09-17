@@ -2,18 +2,16 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 
-def save(conn, url):
-    if "id" not in url or not url["id"]:
-        with conn.cursor() as curs:
-            curs.execute(
-                """
-                INSERT INTO urls (name) VALUES (%s)
-                RETURNING id
-                """,
-                (url["name"],),
-            )
-            id = curs.fetchone()[0]
-            url["id"] = id
+def insert_url(conn, url):
+    with conn.cursor() as curs:
+        curs.execute(
+            """
+            INSERT INTO urls (name) VALUES (%s)
+            RETURNING id
+            """,
+            (url,),
+        )
+        id = curs.fetchone().id
         conn.commit()
         return id
 
@@ -31,7 +29,7 @@ def find(conn, id):
         return result
 
 
-def find_matches(conn, name):
+def check_url_exists(conn, name):
     with conn.cursor() as curs:
         curs.execute(
             """

@@ -32,15 +32,21 @@ def new_url():
 
 
 @app.post("/")
-def post_url():
+def add_url():
     url = request.form.to_dict()
     errors = validate(url)
 
     if errors:
         return render_template("/index.html", url=url, errors=errors)
-    id = db.save(conn, url)
+    url_info = db.check_url_exists(conn, url["name"])
 
-    flash("URL был успешно добавлен", "success")
+    if url_info():
+        flash("Страница уже существует", "info")
+        id = url_info["id"]
+    else:
+        id = db.insert_url(conn, url["name"])
+        flash("URL был успешно добавлен", "success")
+
     return redirect(url_for("show_url", id=id))
 
 
@@ -67,8 +73,6 @@ def validate(url):
         errors["name"] = "URL не должен быть пустым"
     elif len(url["name"]) >= 255:
         errors["name"] = "URL должен быть короче 255 символов"
-    elif db.find_matches(conn, url["name"]):
-        errors["name"] = "Такой url уже существует"
     return errors
 
 
