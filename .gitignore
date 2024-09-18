@@ -11,3 +11,4 @@ coverage.xml
 test/
 .github/workflows/pyci.yml
 trash.py.env
+__pycache__/

@@ -38,11 +38,11 @@ def add_url():
 
     if errors:
         return render_template("/index.html", url=url, errors=errors)
-    url_info = db.check_url_exists(conn, url["name"])
+    existed_url = db.check_url_exists(conn, url["name"])
 
-    if url_info():
+    if existed_url():
         flash("Страница уже существует", "info")
-        id = url_info["id"]
+        id = existed_url["id"]
     else:
         id = db.insert_url(conn, url["name"])
         flash("URL был успешно добавлен", "success")
