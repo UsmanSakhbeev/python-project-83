@@ -4,7 +4,7 @@ DROP TABLE if exists url_checks CASCADE;
 CREATE TABLE urls(
     id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(255) UNIQUE NOT NULL,
-    created_at DATETIME
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE url_checks(
@@ -14,5 +14,5 @@ CREATE TABLE url_checks(
     h1 VARCHAR(255),
     title VARCHAR(255),
     description TEXT,
-    created_at DATETIME
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
