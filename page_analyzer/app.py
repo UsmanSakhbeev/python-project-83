@@ -1,6 +1,7 @@
 import os
 
 import psycopg2
+import requests
 from dotenv import load_dotenv
 from flask import Flask, flash, redirect, render_template, request, url_for
 
@@ -40,7 +41,7 @@ def add_url():
         return render_template("/index.html", url=url, errors=errors)
     existed_url = db.check_url_exists(conn, url["name"])
 
-    if existed_url():
+    if existed_url:
         flash("Страница уже существует", "info")
         id = existed_url["id"]
     else:
@@ -65,6 +66,22 @@ def show_url(id):
         return redirect(url_for("new_url"))
 
     return render_template("/urls/show.html", url=url)
+
+
+@app.post("/urls/<int:id>/checks")
+def check_url(id):
+    url_data = db.find(conn, id)
+    url = url_data["name"]
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        status_code = response.status_code
+        db.insert_check(conn, id, status_code)
+        flash("Проверка успешно пройдена", "succes")
+    except requests.RequestException:
+        flash("Произошла ошибка при проверке", "error")
+    return redirect(url_for("show_url", id=id))
 
 
 def validate(url):

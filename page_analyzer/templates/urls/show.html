@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Example application</title>
+    <title>Анализатор страницы</title>
   </head>
   <body>
     <a href="{{ url_for('new_url') }}">Вернуться на главную</a>
@@ -24,6 +24,29 @@
     </div>
     <div>
       <h2>Проверки</h2>
+
+      <form action="{{url_for('check_url', id = url.id)}}" method="post">
+        <button type="submit">Запустить проверку</button>
+      </form>
+
+      <table data-test="checks">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Код ответа</th>
+            <th>Дата проверки</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for check in url.checks %}
+          <tr>
+            <td>{{ check.id }}</td>
+            <td>{{ check.status_code or 'N/A'}}</td>
+            <td>{{ check.created_at or 'N/A'}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </body>
 </html>

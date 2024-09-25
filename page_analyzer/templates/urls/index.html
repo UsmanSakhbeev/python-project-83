@@ -1,22 +1,32 @@
 <!doctype html>
 <html>
   <head>
-    <title>Список всех сайтов</title>
+    <title>Анализатор страниц</title>
   </head>
   <body>
+    <h2>Сайты</h2>
     <table>
-      {%for url in urls%}
-      <tr>
-        <td>
-          {{url.id}}
-        </td>
-        <td>
-          {{url.name}}
-        </td>
-      </tr>
-      {%endfor%}
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Имя</th>
+          <th>Последняя проверка</th>
+          <th>Код ответа</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for url in urls %}
+        <tr>
+          <td>{{ url.id }}</td>
+          <td>
+            <a href="{{ url_for('show_url', id=url.id) }}">{{ url.name }}</a>
+          </td>
+          <td>{{ url.created_at or 'N/A' }}</td>
+          <td>{{ url.status_code or 'N/A' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
     <a href="{{ url_for('new_url') }}">Вернуться на главную</a>
   </body>
 </html>
-
