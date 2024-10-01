@@ -34,6 +34,9 @@
           <tr>
             <th>ID</th>
             <th>Код ответа</th>
+            <th>h1</th>
+            <th>title</th>
+            <th>description</th>
             <th>Дата проверки</th>
           </tr>
         </thead>
@@ -42,6 +45,9 @@
           <tr>
             <td>{{ check.id }}</td>
             <td>{{ check.status_code or 'N/A'}}</td>
+            <td>{{ check.h1 or 'N/A'}}</td>
+            <td>{{ check.title or 'N/A'}}</td>
+            <td>{{ check.description or 'N/A'}}</td>
             <td>{{ check.created_at or 'N/A'}}</td>
           </tr>
           {% endfor %}

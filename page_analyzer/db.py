@@ -75,12 +75,14 @@ def get_all_urls(conn):
         return urls
 
 
-def insert_check(conn, url_id, status_code):
+def insert_check(conn, url_id, status_code, h1=None, title=None, description=None):
     with conn.cursor(cursor_factory=RealDictCursor) as curs:
         curs.execute(
             """
-            INSERT INTO url_checks (url_id, status_code) VALUES (%s, %s)
+            INSERT INTO
+            url_checks (url_id, status_code, h1, title, description)
+            VALUES (%s, %s, %s, %s, %s)
             """,
-            (url_id, status_code),
+            (url_id, status_code, h1, title, description),
         )
-        conn.commit
+        conn.commit()

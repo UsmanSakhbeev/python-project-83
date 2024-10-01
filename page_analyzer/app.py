@@ -2,6 +2,7 @@ import os
 
 import psycopg2
 import requests
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from flask import Flask, flash, redirect, render_template, request, url_for
 
@@ -77,7 +78,14 @@ def check_url(id):
         response = requests.get(url)
         response.raise_for_status()
         status_code = response.status_code
-        db.insert_check(conn, id, status_code)
+
+        soup = BeautifulSoup(response.text, "lxml")
+        h1 = soup.h1.string if soup.h1 else None
+        title = soup.title.string if soup.title else None
+        description_tag = soup.find("meta", attrs={"name": "description"})
+        description = description_tag["content"] if description_tag else None
+
+        db.insert_check(conn, id, status_code, h1, title, description)
         flash("Проверка успешно пройдена", "succes")
     except requests.RequestException:
         flash("Произошла ошибка при проверке", "error")
