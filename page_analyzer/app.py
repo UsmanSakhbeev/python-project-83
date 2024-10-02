@@ -13,17 +13,6 @@ load_dotenv()
 app = Flask(__name__)
 DATABASE_URL = os.getenv("DATABASE_URL")
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-conn = psycopg2.connect(DATABASE_URL)
-
-"""
-def init_db(conn):
-    with conn.cursor() as curs:
-        with open("../database.sql", "r") as f:
-            sql = f.read()
-
-        curs.execute(sql)
-        conn.commit()
-"""
 
 
 @app.route("/")
@@ -35,10 +24,12 @@ def new_url():
 
 @app.post("/")
 def add_url():
+    conn = db.connect_db(DATABASE_URL)
     url = request.form.to_dict()
     errors = validate(url)
 
     if errors:
+        db.close(conn)
         return render_template("/index.html", url=url, errors=errors)
     existed_url = db.check_url_exists(conn, url["name"])
 
@@ -49,28 +40,35 @@ def add_url():
         id = db.insert_url(conn, url["name"])
         flash("URL был успешно добавлен", "success")
 
+    db.close(conn)
     return redirect(url_for("show_url", id=id))
 
 
 @app.route("/urls")
 def show_urls():
+    conn = db.connect_db(DATABASE_URL)
     urls = db.get_all_urls(conn)
+    db.close(conn)
     return render_template("/urls/index.html", urls=urls)
 
 
 @app.route("/urls/<int:id>")
 def show_url(id):
+    conn = db.connect_db(DATABASE_URL)
     url = db.find(conn, id)
 
     if not url:
+        db.close(conn)
         flash("URL не найден", "error")
         return redirect(url_for("new_url"))
 
+    db.close(conn)
     return render_template("/urls/show.html", url=url)
 
 
 @app.post("/urls/<int:id>/checks")
 def check_url(id):
+    conn = db.connect_db(DATABASE_URL)
     url_data = db.find(conn, id)
     url = url_data["name"]
 
@@ -86,8 +84,10 @@ def check_url(id):
         description = description_tag["content"] if description_tag else None
 
         db.insert_check(conn, id, status_code, h1, title, description)
+        db.close(conn)
         flash("Проверка успешно пройдена", "succes")
     except requests.RequestException:
+        db.close(conn)
         flash("Произошла ошибка при проверке", "error")
     return redirect(url_for("show_url", id=id))
 

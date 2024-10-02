@@ -1,4 +1,13 @@
+import psycopg2
 from psycopg2.extras import RealDictCursor
+
+
+def connect_db(DATABASE_URL):
+    return psycopg2.connect(DATABASE_URL)
+
+
+def close(conn):
+    conn.close()
 
 
 def insert_url(conn, url):
