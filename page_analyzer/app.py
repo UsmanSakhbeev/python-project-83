@@ -81,6 +81,7 @@ def check_url(id):
     except requests.RequestException:
         db.close(conn)
         flash("Произошла ошибка при проверке", "error")
+        return redirect(url_for("show_url", id=id))
 
     status_code = response.status_code
     parsed_html = utils.parse_html(response)
