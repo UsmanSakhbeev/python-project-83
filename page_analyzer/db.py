@@ -35,6 +35,9 @@ def find(conn, url_id):
         )
         url = curs.fetchone()
 
+        if not url:
+            return None
+
         curs.execute(
             """
             SELECT * FROM url_checks

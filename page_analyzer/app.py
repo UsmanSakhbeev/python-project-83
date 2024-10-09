@@ -4,9 +4,9 @@ import psycopg2
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, abort, flash, redirect, render_template, request, url_for
 
-from page_analyzer import db
+from page_analyzer import db, utils
 
 load_dotenv()
 
@@ -16,7 +16,7 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 
 @app.route("/")
-def new_url():
+def get_index():
     url = {"name": ""}
     errors = {}
     return render_template("/index.html", url=url, errors=errors)
@@ -26,7 +26,7 @@ def new_url():
 def add_url():
     conn = db.connect_db(DATABASE_URL)
     url = request.form.to_dict()
-    errors = validate(url)
+    errors = utils.validate(url)
 
     if errors:
         db.close(conn)
@@ -59,8 +59,7 @@ def show_url(id):
 
     if not url:
         db.close(conn)
-        flash("URL не найден", "error")
-        return redirect(url_for("new_url"))
+        abort(404, description="URL не найден")
 
     db.close(conn)
     return render_template("/urls/show.html", url=url)
@@ -72,33 +71,31 @@ def check_url(id):
     url_data = db.find(conn, id)
     url = url_data["name"]
 
+    if not url_data:
+        db.close(conn)
+        abort(404, description="URL для проверки не найден")
+
     try:
         response = requests.get(url)
         response.raise_for_status()
-        status_code = response.status_code
-
-        soup = BeautifulSoup(response.text, "lxml")
-        h1 = soup.h1.string if soup.h1 else None
-        title = soup.title.string if soup.title else None
-        description_tag = soup.find("meta", attrs={"name": "description"})
-        description = description_tag["content"] if description_tag else None
-
-        db.insert_check(conn, id, status_code, h1, title, description)
-        db.close(conn)
-        flash("Проверка успешно пройдена", "succes")
     except requests.RequestException:
         db.close(conn)
         flash("Произошла ошибка при проверке", "error")
+
+    status_code = response.status_code
+    parsed_html = utils.parse_html(response)
+
+    db.insert_check(
+        conn,
+        id,
+        status_code,
+        parsed_html["h1"],
+        parsed_html["title"],
+        parsed_html["description"],
+    )
+    db.close(conn)
+    flash("Проверка успешно пройдена", "succes")
     return redirect(url_for("show_url", id=id))
-
-
-def validate(url):
-    errors = {}
-    if "name" not in url or not url["name"]:
-        errors["name"] = "URL не должен быть пустым"
-    elif len(url["name"]) >= 255:
-        errors["name"] = "URL должен быть короче 255 символов"
-    return errors
 
 
 if __name__ == "__main__":
