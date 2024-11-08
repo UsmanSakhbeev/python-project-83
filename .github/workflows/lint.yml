@@ -11,6 +11,8 @@ jobs:
         with:
           python-version: '3.8'
       - name: Install dependencies
-        run: poetry install
+        run: |
+          pip install poetry
+          make install
       - name: Run linter
         run: poetry run flake8
