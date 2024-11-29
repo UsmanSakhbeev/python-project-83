@@ -6,7 +6,7 @@
   <form action="{{ url_for('add_url') }}" method="post">
       <div>
           <label>URL
-              <input type="url" name="name" value="{{ url.name }}">
+            <input type="url" name="url" value="{{ url.get('url', '') }}">
           </label>
           {% if errors.name %}
               <div class="text-danger">{{ errors.name }}</div>

@@ -1,8 +1,6 @@
 import os
 
-import psycopg2
 import requests
-from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from flask import Flask, abort, flash, redirect, render_template, request, url_for
 
@@ -26,18 +24,18 @@ def get_index():
 def add_url():
     conn = db.connect_db(DATABASE_URL)
     url = request.form.to_dict()
-    errors = utils.validate(url)
+    errors = utils.validate({"url": url["url"]})
 
     if errors:
         db.close(conn)
-        return render_template("/index.html", url=url, errors=errors)
-    existed_url = db.check_url_exists(conn, url["name"])
+        return render_template("/index.html", url={"name": url["url"]}, errors=errors)
+    existed_url = db.check_url_exists(conn, url["url"])
 
     if existed_url:
         flash("Страница уже существует", "info")
         id = existed_url["id"]
     else:
-        id = db.insert_url(conn, url["name"])
+        id = db.insert_url(conn, url["url"])
         flash("URL был успешно добавлен", "success")
 
     db.close(conn)

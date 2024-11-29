@@ -12,8 +12,8 @@ def parse_html(html_content):
 
 def validate(url):
     errors = {}
-    if "name" not in url or not url["name"]:
-        errors["name"] = "URL не должен быть пустым"
-    elif len(url["name"]) >= 255:
-        errors["name"] = "URL должен быть короче 255 символов"
+    if "url" not in url or not url["url"]:
+        errors["url"] = "URL не должен быть пустым"
+    elif len(url["url"]) >= 255:
+        errors["url"] = "URL должен быть короче 255 символов"
     return errors
