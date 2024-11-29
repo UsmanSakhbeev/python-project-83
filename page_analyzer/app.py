@@ -36,7 +36,7 @@ def add_url():
         id = existed_url["id"]
     else:
         id = db.insert_url(conn, url["url"])
-        flash("URL был успешно добавлен", "success")
+        flash("Страница успешно добавлена", "success")
 
     db.close(conn)
     return redirect(url_for("show_url", id=id))
