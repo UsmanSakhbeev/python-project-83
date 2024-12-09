@@ -16,4 +16,6 @@ def validate(url):
         errors["url"] = "URL не должен быть пустым"
     elif len(url["url"]) >= 255:
         errors["url"] = "URL должен быть короче 255 символов"
+    elif not url["url"].startswith(("http://", "https://")):
+        errors["url"] = "Некорректный URL"
     return errors

@@ -93,7 +93,7 @@ def check_url(id):
         parsed_html["description"],
     )
     db.close(conn)
-    flash("Проверка успешно пройдена", "succes")
+    flash("Страница успешно проверена", "succes")
     return redirect(url_for("show_url", id=id))
 
 
