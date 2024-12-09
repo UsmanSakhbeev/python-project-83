@@ -2,19 +2,19 @@
 
 {%block title%}Главная страница{%endblock%}
 
-{%block content%}
+{% block content %}
   <form action="{{ url_for('add_url') }}" method="post">
       <div>
           <label>URL
             <input type="url" name="url" value="{{ url.get('url', '') }}">
           </label>
-          {% if errors.name %}
-              <div class="text-danger">{{ errors.name }}</div>
+          {% if errors.url %}
+              <div class="text-danger">{{ errors.url }}</div>
           {% endif %}
       </div>
       <input type="submit" value="Create" class="btn btn-primary">
   </form>
-  <form action="{{url_for("show_urls")}}" method="get">
+  <form action="{{ url_for('show_urls') }}" method="get">
      <button type="submit" class="btn btn-secondary">Show urls</button>
   </form>
-{%endblock%}
+{% endblock %}

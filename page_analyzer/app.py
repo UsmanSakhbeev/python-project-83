@@ -31,7 +31,7 @@ def add_url():
         db.close(conn)
         return render_template(
             "/index.html", url={"url": url.get("url")}, errors=errors
-        )
+        ), 422
     existed_url = db.check_url_exists(conn, normalized_url)
 
     if existed_url:
