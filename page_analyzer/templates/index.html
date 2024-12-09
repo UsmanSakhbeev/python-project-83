@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{%block title%}Главная страница{%endblock%}
+{% block title %}Главная страница{% endblock %}
 
 {% block content %}
   <form action="{{ url_for('add_url') }}" method="post">
@@ -8,9 +8,6 @@
           <label>URL
             <input type="url" name="url" value="{{ url.get('url', '') }}">
           </label>
-          {% if errors.url %}
-              <div class="text-danger">{{ errors.url }}</div>
-          {% endif %}
       </div>
       <input type="submit" value="Create" class="btn btn-primary">
   </form>
