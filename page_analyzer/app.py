@@ -24,18 +24,21 @@ def get_index():
 def add_url():
     conn = db.connect_db(DATABASE_URL)
     url = request.form.to_dict()
-    errors = utils.validate({"url": url["url"]})
+    normalized_url = utils.normalize_url(url["url"])
+    errors = utils.validate({"url": normalized_url})
 
     if errors:
         db.close(conn)
-        return render_template("/index.html", url={"name": url["url"]}, errors=errors)
-    existed_url = db.check_url_exists(conn, url["url"])
+        return render_template(
+            "/index.html", url={"url": url.get("url")}, errors=errors
+        )
+    existed_url = db.check_url_exists(conn, normalized_url)
 
     if existed_url:
         flash("Страница уже существует", "info")
         id = existed_url["id"]
     else:
-        id = db.insert_url(conn, url["url"])
+        id = db.insert_url(conn, normalized_url)
         flash("Страница успешно добавлена", "success")
 
     db.close(conn)

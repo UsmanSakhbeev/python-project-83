@@ -1,4 +1,11 @@
+import urllib.parse
+
 from bs4 import BeautifulSoup
+
+
+def normalize_url(url):
+    parsed_url = urllib.parse.urlparse(url)
+    return f"{parsed_url.scheme}://{parsed_url.netloc}"
 
 
 def parse_html(html_content):
@@ -18,4 +25,11 @@ def validate(url):
         errors["url"] = "URL должен быть короче 255 символов"
     elif not url["url"].startswith(("http://", "https://")):
         errors["url"] = "Некорректный URL"
+    else:
+        try:
+            result = urllib.parse.urlparse(url["url"])
+            if not result.netloc:
+                raise ValueError("Некорректный URL")
+        except ValueError:
+            errors["url"] = "Некорректный URL"
     return errors
