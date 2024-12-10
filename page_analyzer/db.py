@@ -87,7 +87,8 @@ def get_all_urls(conn):
         return urls
 
 
-def insert_check(conn, url_id, status_code, h1=None, title=None, description=None):
+def insert_check(conn, url_id, status_code, h1=None, title=None,
+                 description=None):
     with conn.cursor(cursor_factory=RealDictCursor) as curs:
         curs.execute(
             """

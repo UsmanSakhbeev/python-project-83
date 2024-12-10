@@ -2,7 +2,8 @@ import os
 
 import requests
 from dotenv import load_dotenv
-from flask import Flask, abort, flash, redirect, render_template, request, url_for
+from flask import (
+    Flask, abort, flash, redirect, render_template, request, url_for)
 
 from page_analyzer import db, utils
 
@@ -32,7 +33,8 @@ def add_url():
 
         flash(errors["url"], "error")
         return (
-            render_template("/index.html", url={"url": url.get("url")}, errors=errors),
+            render_template("/index.html", url={"url": url.get("url")},
+                            errors=errors),
             422,
         )
 
