@@ -20,7 +20,7 @@ def get_index():
     return render_template("/index.html", url=url, errors=errors)
 
 
-@app.post("/")
+@app.post("/urls")
 def add_url():
     conn = db.connect_db(DATABASE_URL)
     url = request.form.to_dict()
